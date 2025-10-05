@@ -107,19 +107,20 @@ class AlertListCreateView(APIView):
                 <h2>🚨 Emergency Alert — Immediate Action Required</h2>
                 <p><strong>📍 Location:</strong> {address or "Unknown address"}</p>
                 <p><strong>🌍 Coordinates:</strong> Latitude: {latitude}, Longitude: {longitude}</p>
-                <p><strong>🗺️ Google Maps:</strong> 
+                <p><strong>🗺️ Google Maps:</strong>
                     <a href="https://maps.google.com/?q={latitude},{longitude}" target="_blank">
                         View on Google Maps
                     </a>
                 </p>
-                <p><strong>🎤 Audio Recording:</strong> 
+                <p><strong>🎤 Audio Recording:</strong>
                     <a href="{audio_url}" target="_blank">Listen to the audio</a>
                 </p>
-        
+            
                 <div class="alert">
-                    ⚠️ Please take immediate action — contact the person and notify emergency services. You will be receiving the user's location every 5 minutes for the next one hour.
+                    ⚠️ Please take immediate action — contact the person and notify emergency services. You will be receiving the
+                    user's location every 5 minutes for the next one hour.
                 </div>
-        
+            
                 <p class="footer">
                     This alert was generated automatically by <strong>Usalama Wangu</strong> for user safety.
                 </p>
