@@ -10,6 +10,7 @@ from rest_framework import generics
 from django.core.mail import send_mail, EmailMessage
 from dotenv import load_dotenv
 import os
+from .audio_handler import upload_audio
 
 load_dotenv()
 
@@ -34,16 +35,8 @@ class AlertListCreateView(APIView):
         if not latitude or not longitude:
             return Response({'message': 'Latitude and longitude are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Upload to Cloudinary
-        try:
-            upload_response = cloudinary.uploader.upload(
-                audio_file,
-                folder="Usalama_wangu_emergency_audio",
-                resource_type="video"
-            )
-            audio_url = upload_response["secure_url"]
-        except Exception as e:
-            return Response({'error': f'Cloudinary upload failed: {e}'}, status=500)
+        # Upload audio to both Cloudinary and Azure
+        azure_url, cloudinary_url = upload_audio(audio_file)
 
         # Send email to emergency contacts
         contacts = request.data.getlist('notified_contacts')
@@ -113,7 +106,8 @@ class AlertListCreateView(APIView):
                     </a>
                 </p>
                 <p><strong>🎤 Audio Recording:</strong>
-                    <a href="{audio_url}" target="_blank">Listen to the audio</a>
+                    <a href="{cloudinary_url}" target="_blank">Listen to the audio</a>
+                    <a href="{azure_url}" target="_blank">Download the audio</a>
                 </p>
             
                 <div class="alert">
@@ -145,7 +139,7 @@ class AlertListCreateView(APIView):
             longitude=float(longitude),
             address=address,
             accuracy=float(accuracy) if accuracy else None,
-            audio_url=audio_url,
+            audio_url=cloudinary_url,
             notified_contacts=[contacts],
             delivered_to_authorities=False
         )
@@ -155,7 +149,7 @@ class AlertListCreateView(APIView):
             {
                 "success": True,
                 "alert": serializer.data,
-                "message": "Emergency alert created and notifications sent"
+                "message": "Emergency alert created and notifications sent",
             },
             status=status.HTTP_201_CREATED
         )

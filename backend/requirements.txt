@@ -3,3 +3,5 @@ djangorestframework
 dotenv
 psycopg2
 cloudinary
+azure-storage-blob
+azure-identity
