@@ -1,0 +1,8 @@
+python-dotenv
+django
+djangorestframework
+psycopg2
+cloudinary
+azure-storage-blob
+azure-identity
+Crawl4AI==0.4.247
