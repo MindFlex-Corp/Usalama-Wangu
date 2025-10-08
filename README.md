@@ -87,13 +87,7 @@ pip install -r requirements.txt
 
 #### Set Up Environment Variables
 
-Copy the example file:
-
-```bash
-cp .env.example backend/.env
-```
-
-Then open `backend/.env` and fill in your credentials:
+Open `backend/.env` and fill in your credentials:
 
 ```env
 DB_NAME=
