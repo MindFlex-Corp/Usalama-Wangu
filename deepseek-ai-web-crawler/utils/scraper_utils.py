@@ -8,7 +8,7 @@ from crawl4ai import (
     CacheMode,
     CrawlerRunConfig,
     LLMExtractionStrategy,
-    LLMConfig
+    # LLMConfig
 )
 
 from models.incidents import Incident
@@ -33,52 +33,29 @@ def get_browser_config() -> BrowserConfig:
     )
 
 
-# def get_llm_strategy() -> LLMExtractionStrategy:
-#     """
-#     Returns the configuration for the language model extraction strategy.
-#
-#     Returns:
-#         LLMExtractionStrategy: The settings for how to extract data using LLM.
-#     """
-#     # https://docs.crawl4ai.com/api/strategies/#llmextractionstrategy
-#     return LLMExtractionStrategy(
-#         # Name of the LLM provider and API token for authentication
-#         llmconfig=LLMConfig(provider="groq/llama-3.3-70b-versatile", api_token=os.getenv("GROQ_API_KEY"),
-#                             base_url="https://api.groq.com/openai/v1"),
-#         schema=Incident.model_json_schema(),  # JSON schema of the data model
-#         extraction_type="schema",  # Type of extraction to perform
-#         instruction=(
-#             # "Extract all venue objects with 'name', 'location', 'price', 'capacity', "
-#             # "'rating', 'reviews', and a 1 sentence description of the venue from the "
-#             # "following content."
-#             """
-#             Extract all the incidents (disease outbreaks, car accidents, natural disasters, animal attacks, murders,
-#              muggings, riots) with 'zone_type (extremely_dangerous, dangerous, relatively_unsafe, accident_zone,
-#               wildlife_danger)', 'latitude', 'longitude', 'radius', 'title', 'timestamp' and a 1 sentence description of
-#                the incident from the following content.
-#             """
-#         ),  # Instructions for the LLM
-#         input_format="markdown",  # Format of the input content
-#         verbose=True,  # Enable verbose logging
-#     )
-
 def get_llm_strategy() -> LLMExtractionStrategy:
-    """Configure LLM extraction to use Groq instead of OpenAI."""
+    """
+    Returns the configuration for the language model extraction strategy.
+
+    Returns:
+        LLMExtractionStrategy: The settings for how to extract data using LLM.
+    """
+    # https://docs.crawl4ai.com/api/strategies/#llmextractionstrategy
     return LLMExtractionStrategy(
-        llmconfig=LLMConfig(
-            provider="groq/llama-3.3-70b-versatile",  # ✅ must start with "groq"
-            api_token=os.getenv("GROQ_API_KEY"),  # ✅ explicitly provide token
-            base_url="https://api.groq.com/openai/v1",  # ✅ Groq’s OpenAI-compatible endpoint
-        ),
-        schema=Incident.model_json_schema(),
-        extraction_type="schema",
+        provider="groq/deepseek-r1-distill-llama-70b",  # Name of the LLM provider
+        api_token=os.getenv("GROQ_API_KEY"),  # API token for authentication
+        schema=Incident.model_json_schema(),  # JSON schema of the data model
+        extraction_type="schema",  # Type of extraction to perform
         instruction=(
-            "Extract all the incidents (disease outbreaks, car accidents, natural disasters, "
-            "animal attacks, murders, muggings, riots) with fields: zone_type, latitude, longitude, "
-            "radius, title, timestamp, and a short description."
-        ),
-        input_format="markdown",
-        verbose=True,
+            """
+            Extract all the incidents (disease outbreaks, car accidents, natural disasters, animal attacks, murders,
+             muggings, riots) that directly result in death or injury of human lives with 'zone_type (extremely_dangerous, dangerous, relatively_unsafe, accident_zone,
+              wildlife_danger)', 'latitude', 'longitude', 'radius', 'title', 'timestamp' and a 1 sentence description of
+               the incident from the following content.
+            """
+        ),  # Instructions for the LLM
+        input_format="markdown",  # Format of the input content
+        verbose=True,  # Enable verbose logging
     )
 
 

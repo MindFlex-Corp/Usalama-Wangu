@@ -1,4 +1,6 @@
 import asyncio
+from datetime import datetime
+import os
 
 from crawl4ai import AsyncWebCrawler
 from dotenv import load_dotenv
@@ -18,7 +20,7 @@ load_dotenv()
 
 async def crawl_incidents():
     """
-    Main function to crawl venue data from the website.
+    Main function to crawl incident data from the website.
     """
     # Initialize configurations
     browser_config = get_browser_config()
@@ -52,19 +54,31 @@ async def crawl_incidents():
 
             if not incidents:
                 print(f"No incidents extracted from page {page_number}.")
-                break  # Stop if no venues are extracted
+                break  # Stop if no incidents are extracted
 
-            # Add the venues from this page to the total list
+            # Add the incidents from this page to the total list
             all_incidents.extend(incidents)
             page_number += 1  # Move to the next page
 
             # Pause between requests to be polite and avoid rate limits
             await asyncio.sleep(2)  # Adjust sleep time as needed
 
-    # Save the collected venues to a CSV file
+    # Save the collected incidents to a CSV file
     if all_incidents:
-        save_incidents_to_csv(all_incidents, "complete_incidents.csv")
-        print(f"Saved {len(all_incidents)} incidents to 'complete_incidents.csv'.")
+        # Create a timestamp (e.g., 2025-10-08_21-34-55)
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        # Ensure the outputs directory exists
+        output_dir = "outputs"
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Build the full path to the CSV file
+        filename = f"complete_incidents_{timestamp}.csv"
+        filepath = os.path.join(output_dir, filename)
+
+        # Save the file
+        save_incidents_to_csv(all_incidents, filepath)
+        print(f"Saved {len(all_incidents)} incidents to '{filepath}'.")
     else:
         print("No incidents were found during the crawl.")
 
@@ -81,6 +95,4 @@ async def main():
 
 if __name__ == "__main__":
     strategy = get_llm_strategy()
-    print("✅ Using LLM Provider:", strategy.llm_config.provider)
-    print("✅ API Key Prefix:", strategy.llm_config.api_token[:6])
     asyncio.run(main())
