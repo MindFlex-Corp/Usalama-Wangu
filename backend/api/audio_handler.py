@@ -9,18 +9,21 @@ from rest_framework.response import Response
 
 load_dotenv()
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True
 )
 
 # Initialize Azure client
-account_url = "https://usalamawangu.blob.core.windows.net"
-container_name = "usalama-wangu-audio"
-default_credential = DefaultAzureCredential()
+try:
+    account_url = "https://usalamawangu.blob.core.windows.net"
+    container_name = "usalama-wangu-audio"
+    default_credential = DefaultAzureCredential()
 
-blob_service_client = BlobServiceClient(account_url, credential=default_credential)
+    blob_service_client = BlobServiceClient(account_url, credential=default_credential)
+except Exception as e:
+    print(f"Azure initialization failed: {e}")
 
 
 def upload_audio(audio_file):
