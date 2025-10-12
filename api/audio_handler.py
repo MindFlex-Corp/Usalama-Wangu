@@ -3,7 +3,6 @@ import uuid
 import cloudinary
 import cloudinary.uploader
 from azure.storage.blob import BlobServiceClient
-from azure.identity import DefaultAzureCredential
 from dotenv import load_dotenv
 from rest_framework.response import Response
 
@@ -16,14 +15,15 @@ cloudinary.config(
 )
 
 # Initialize Azure client
-try:
-    account_url = "https://usalamawangu.blob.core.windows.net"
-    container_name = "usalama-wangu-audio"
-    default_credential = DefaultAzureCredential()
+account_url = "https://usalamawangu.blob.core.windows.net"
+container_name = "usalama-wangu-audio"
 
-    blob_service_client = BlobServiceClient(account_url, credential=default_credential)
-except Exception as e:
-    print(f"Azure initialization failed: {e}")
+connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+
+if not connection_string:
+    print("⚠️ Missing AZURE_STORAGE_CONNECTION_STRING — Azure upload disabled.")
+else:
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 
 
 def upload_audio(audio_file):
