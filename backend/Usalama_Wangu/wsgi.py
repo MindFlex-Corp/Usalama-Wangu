@@ -11,7 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Usalama_Wangu.settings') # For development
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.Usalama_Wangu.settings') # For deployment
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Usalama_Wangu.settings')
 
 application = get_wsgi_application()
