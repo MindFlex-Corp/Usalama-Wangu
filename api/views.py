@@ -7,7 +7,8 @@ from Alerts.models import SMS
 from Zones.models import Zone
 from .serializers import AlertSerializer, SMSSerializer, ZoneSerializer
 from rest_framework import generics
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage, BadHeaderError
+from smtplib import SMTPException
 from dotenv import load_dotenv
 import os
 from .audio_handler import upload_audio
@@ -20,7 +21,7 @@ class AlertListCreateView(APIView):
     def get(self, request):
         alerts = Alert.objects.all().order_by('-created_at')[:50]
         serializer = AlertSerializer(alerts, many=True)
-        return Response({"alerts": serializer.data})
+        return Response({"alerts": serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         latitude = request.data.get('latitude')
@@ -131,7 +132,15 @@ class AlertListCreateView(APIView):
                 to=contacts,
             )
             email.content_subtype = "html"
-            email.send(fail_silently=False)
+            try:
+                email.send(fail_silently=False)
+                print("Email sent successfully.")
+            except BadHeaderError:
+                print("Invalid header found.")
+            except SMTPException as e:
+                print(f"SMTP error occurred: {e}")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
 
         # Create Alert
         alert = Alert.objects.create(
@@ -159,7 +168,7 @@ class AlertSMSHistoryView(APIView):
     def get(self, request, alert_id):
         sms_records = SMS.objects.filter(alert_id=alert_id)
         serializer = SMSSerializer(sms_records, many=True)
-        return Response({"sms_records": serializer.data})
+        return Response({"sms_records": serializer.data}, status=status.HTTP_200_OK)
 
 
 class ZoneList(generics.ListCreateAPIView):
