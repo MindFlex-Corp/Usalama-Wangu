@@ -22,13 +22,9 @@ from django.http import JsonResponse
 def root_view(request):
     return JsonResponse({"message": "Safety Zones API is running..."})
 
-def health_view(request):
-    return JsonResponse({"status": "ok"})
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', root_view),
-    path('health/', health_view),
     path('api/', include('api.urls'))
 ]

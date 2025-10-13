@@ -123,7 +123,7 @@ class AlertListCreateView(APIView):
         </html>
         """
 
-            from_email = os.environ.get("EMAIL_HOST_USER")
+            from_email = os.getenv("EMAIL_HOST_USER")
             email = EmailMessage(
                 subject=subject,
                 body=message,
